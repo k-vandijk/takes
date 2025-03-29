@@ -1,18 +1,12 @@
-// Formats a date to a string in the format 'dd MM yyyy' in Amsterdam time
-String formatDate(DateTime date) {
-  return '${date.day.toString().padLeft(2, '0')} '
-         '${date.month.toString().padLeft(2, '0')} '
-         '${date.year}';
+String formatBytesToMegaBytes(int bytes) {
+  if (bytes <= 0) return '0 MB';
+  final double megabytes = bytes / (1024 * 1024);
+  return '${megabytes.toStringAsFixed(2)} MB';
 }
 
-// Formats a date to a string in the format 'MM/yyyy' in Amsterdam time
-String formatMonth(DateTime date) {
-  return '${date.month.toString().padLeft(2, '0')}/${date.year}';
+String formatSecondsToMmSs(double seconds) {
+  int totalSeconds = seconds.round();
+  final int minutes = totalSeconds ~/ 60;
+  final int remainingSeconds = totalSeconds % 60;
+  return '${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
 }
-
-// Formats a time to a string in the format 'hh:mm' in Amsterdam time
-String formatTime(DateTime date) {
-  return '${date.hour.toString().padLeft(2, '0')}:'
-         '${date.minute.toString().padLeft(2, '0')}';
-}
-
