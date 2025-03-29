@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:takes/screens/home_screen.dart';
 
@@ -15,7 +16,10 @@ void main() {
     MaterialApp(
       theme: ThemeData(colorScheme: kColorScheme),
       darkTheme: ThemeData(colorScheme: kDarkColorScheme),
-      home: Scaffold(body: Center(child: HomeScreen())),
+      home: Scaffold(
+        // backgroundColor: kColorScheme.primary,
+        body: const Center(child: HomeScreen())
+      ),
     ),
   );
 }

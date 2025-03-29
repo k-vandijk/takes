@@ -3,14 +3,10 @@ import 'package:path/path.dart' as p;
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
+import 'package:takes/entities/recording.dart';
 import 'package:takes/helpers/notifications_helper.dart';
-
-class Recording {
-  final String path;
-  final DateTime dateTime;
-
-  Recording({required this.path, required this.dateTime});
-}
+import 'package:takes/widgets/recorder_button_widget.dart';
+import 'package:takes/widgets/recording_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -24,12 +20,18 @@ class _HomeScreenState extends State<HomeScreen> {
   bool isRecording = false;
   List<Recording> recordings = [];
 
+  final RecordConfig config = const RecordConfig(
+    encoder: AudioEncoder.wav,
+    bitRate: 1411000,
+    sampleRate: 44100,
+  );
+
   Future<void> _startRecording () async {
     if (await record.hasPermission()) {
       final Directory dir = await getApplicationDocumentsDirectory();
-      final String rndFilename = DateTime.now().millisecondsSinceEpoch.toString();
-      final String path = p.join(dir.path, '$rndFilename.wav');
-      await record.start(const RecordConfig(), path: path);
+      final String filename = DateTime.now().millisecondsSinceEpoch.toString();
+      final String path = p.join(dir.path, '$filename.wav');
+      await record.start(config, path: path);
       setState(() => isRecording = true);
     } else {
       showErrorSnackBar(context);
@@ -47,13 +49,21 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _saveRecording (String path) {
-    final String filename = p.basename(path);
     final String dateTime = DateTime.now().toString();
     final Recording recording = Recording(path: path, dateTime: DateTime.parse(dateTime));
     setState(() {
       recordings.add(recording);
     });
-    showSnackbar(context, 'Recording saved: $filename');
+  }
+
+  void _onDeleteRecording(Recording recording) {
+    final File file = File(recording.path);
+    if (file.existsSync()) {
+      file.deleteSync();
+    }
+    setState(() {
+      recordings.removeWhere((r) => r.path == recording.path);
+    });
   }
 
   @override
@@ -66,38 +76,15 @@ class _HomeScreenState extends State<HomeScreen> {
             itemCount: recordings.length,
             itemBuilder: (context, index) {
               final recording = recordings[index];
-              return ListTile(
-                title: Text(recording.path),
-                subtitle: Text(recording.dateTime.toString()),
-                trailing: IconButton(
-                  icon: const Icon(Icons.delete),
-                  onPressed: () {
-                    setState(() {
-                      recordings.removeAt(index);
-                    });
-                    showSnackbar(context, 'Recording deleted');
-                  },
-                ),
-              );
+              return RecordingWidget(recording: recording, onDelete: () => _onDeleteRecording(recording));
             },
           ),
           const Spacer(),
-          IconButton(
-            icon: Icon(isRecording ? Icons.stop : Icons.mic), 
-            iconSize: 32,
-            style: IconButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              foregroundColor: Theme.of(context).colorScheme.onPrimary,
-            ),
-            onPressed: () async {
-              if (isRecording) {
-                await _stopRecording();
-              } else {
-                await _startRecording();
-              }
-            },
+          RecorderButtonWidget(
+            onStartRecording: () => _startRecording(), 
+            onStopRecording: () => _stopRecording(),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 32),
         ],
       ),
     );
