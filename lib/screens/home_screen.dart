@@ -33,14 +33,18 @@ class _HomeScreenState extends State<HomeScreen> {
       durationSeconds: duration?.inSeconds.toDouble() ?? 0.0,
       sizeBytes: size,
     );
-    await Provider.of<RecordsProvider>(context, listen: false)
-        .addRecording(recording);
+    await Provider.of<RecordsProvider>(
+      context,
+      listen: false,
+    ).addRecording(recording);
   }
 
   void _onDeleteRecording(Recording recording) {
     _deleteRecording(recording.path);
-    Provider.of<RecordsProvider>(context, listen: false)
-        .removeRecording(recording);
+    Provider.of<RecordsProvider>(
+      context,
+      listen: false,
+    ).removeRecording(recording);
   }
 
   void _deleteRecording(String path) {
@@ -91,30 +95,30 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Column(
+      child: Stack(
         children: [
-          Expanded(
-            child: Consumer<RecordsProvider>(
-              builder: (context, recordsProvider, child) {
-                final recordings = recordsProvider.recordings;
-                return ListView.builder(
-                  itemCount: recordings.length,
-                  itemBuilder: (context, index) {
-                    final recording = recordings[index];
-                    return RecordingWidget(
-                      recording: recording,
-                      onDelete: () => _onDeleteRecording(recording),
-                    );
-                  },
-                );
-              },
+          Consumer<RecordsProvider>(
+            builder: (context, recordsProvider, child) {
+              final recordings = recordsProvider.recordings;
+              return ListView.builder(
+                itemCount: recordings.length,
+                itemBuilder: (context, index) {
+                  final recording = recordings[index];
+                  return RecordingWidget(
+                    recording: recording,
+                    onDelete: () => _onDeleteRecording(recording),
+                  );
+                },
+              );
+            },
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: RecorderButtonWidget(
+              onStartRecording: startRecording,
+              onStopRecording: stopRecording,
             ),
           ),
-          RecorderButtonWidget(
-            onStartRecording: startRecording,
-            onStopRecording: stopRecording,
-          ),
-          const SizedBox(height: 32),
         ],
       ),
     );

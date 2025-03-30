@@ -51,31 +51,33 @@ class _RecorderButtonWidgetState extends State<RecorderButtonWidget>
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        if (isRecording)
-          ScaleTransition(
-            scale: _scaleAnimation,
-            child: Container(
-              width: 70,
-              height: 70,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Theme.of(context).colorScheme.onSurface.withAlpha(50),
+    return Positioned(
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          if (isRecording)
+            ScaleTransition(
+              scale: _scaleAnimation,
+              child: Container(
+                width: 70,
+                height: 70,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Theme.of(context).colorScheme.onSurface.withAlpha(50),
+                ),
               ),
             ),
+          IconButton(
+            icon: Icon(isRecording ? Icons.stop : Icons.mic),
+            iconSize: 32,
+            style: IconButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              foregroundColor: Theme.of(context).colorScheme.onPrimary,
+            ),
+            onPressed: _handlePressed,
           ),
-        IconButton(
-          icon: Icon(isRecording ? Icons.stop : Icons.mic),
-          iconSize: 32,
-          style: IconButton.styleFrom(
-            backgroundColor: Theme.of(context).colorScheme.primary,
-            foregroundColor: Theme.of(context).colorScheme.onPrimary,
-          ),
-          onPressed: _handlePressed,
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
