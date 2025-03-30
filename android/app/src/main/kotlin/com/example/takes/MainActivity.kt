@@ -1,4 +1,4 @@
-package com.example.takes
+package com.kvandijk.takes
 
 import io.flutter.embedding.android.FlutterActivity
 
