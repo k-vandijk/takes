@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:takes/entities/recording.dart';
@@ -47,7 +46,6 @@ class _RecordingWidgetState extends State<RecordingWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final filename = widget.recording.path.split(Platform.pathSeparator).last;
     return Card(
       elevation: 2,
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
@@ -59,7 +57,7 @@ class _RecordingWidgetState extends State<RecordingWidget> {
           color: Theme.of(context).primaryColor,
           onPressed: _togglePlayback,
         ),
-        title: Text(filename, style: const TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(widget.recording.name, style: const TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Text('${formatBytesToMegaBytes(widget.recording.sizeBytes)} ${formatSecondsToMmSs(widget.recording.durationSeconds)}'),
         trailing: IconButton(
           icon: const Icon(Icons.delete),

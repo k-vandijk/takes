@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:just_audio/just_audio.dart';
 import 'package:path/path.dart' as p;
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -8,8 +7,10 @@ import 'package:record/record.dart';
 import 'package:takes/config.dart' as config;
 import 'package:takes/entities/recording.dart';
 import 'package:takes/helpers/notifications_helper.dart';
+import 'package:takes/helpers/recording_metadata_helper.dart';
 import 'package:takes/providers/recordings_provider.dart';
 import 'package:takes/widgets/recorder_button_widget.dart';
+import 'package:takes/widgets/recording_name_modal.dart';
 import 'package:takes/widgets/recording_widget.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -23,22 +24,11 @@ class _HomeScreenState extends State<HomeScreen> {
   final record = AudioRecorder();
   bool isRecording = false;
 
-  Future<Duration?> _getAudioDuration(String filePath) async {
-    final audioPlayer = AudioPlayer();
-    try {
-      await audioPlayer.setFilePath(filePath);
-      return audioPlayer.duration;
-    } catch (e) {
-      return null;
-    } finally {
-      await audioPlayer.dispose();
-    }
-  }
-
-  Future<void> _saveRecording(String path) async {
-    final duration = await _getAudioDuration(path);
+  Future<void> _saveRecording(String path, String name) async {
+    final duration = await getAudioDuration(path);
     final size = await File(path).length();
     final recording = Recording(
+      name: name,
       path: path,
       durationSeconds: duration?.inSeconds.toDouble() ?? 0.0,
       sizeBytes: size,
@@ -48,35 +38,48 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _onDeleteRecording(Recording recording) {
-    final file = File(recording.path);
-    if (file.existsSync()) {
-      // ignore: invalid_return_type_for_catch_error
-      file.delete().catchError((e) => print('Error deleting file: $e'));
-    }
+    _deleteRecording(recording.path);
     Provider.of<RecordsProvider>(context, listen: false)
         .removeRecording(recording);
   }
 
-  Future<void> startRecording() async {
-    if (await record.hasPermission()) {
-      final directory = await getApplicationDocumentsDirectory();
-      final filename = DateTime.now().millisecondsSinceEpoch.toString();
-      final path = p.join(directory.path, '$filename.wav');
-      await record.start(config.recordConfigLow, path: path);
-      setState(() => isRecording = true);
-    } else {
-      showErrorSnackBar(context);
+  void _deleteRecording(String path) {
+    final file = File(path);
+    if (file.existsSync()) {
+      // ignore: invalid_return_type_for_catch_error
+      file.delete().catchError((e) => print('Error deleting file: $e'));
     }
+  }
+
+  Future<void> startRecording() async {
+    if (!await record.hasPermission()) {
+      showErrorSnackBar(context);
+      return;
+    }
+
+    setState(() => isRecording = true);
+    final directory = await getApplicationDocumentsDirectory();
+    final filename = DateTime.now().millisecondsSinceEpoch.toString();
+    final path = p.join(directory.path, '$filename.wav');
+    await record.start(config.recordConfigLow, path: path);
   }
 
   Future<void> stopRecording() async {
     setState(() => isRecording = false);
+
     final path = await record.stop();
     if (path == null) {
       showErrorSnackBar(context);
       return;
     }
-    _saveRecording(path);
+
+    final name = await getRecordingName(context);
+    if (name == null) {
+      _deleteRecording(path);
+      return;
+    }
+
+    _saveRecording(path, name);
   }
 
   @override
