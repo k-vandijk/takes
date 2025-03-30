@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:takes/entities/recording.dart';
 import 'package:takes/helpers/formatting_helper.dart';
+import 'package:takes/widgets/recording_details_modal.dart';
 
 class RecordingWidget extends StatefulWidget {
   final Recording recording;
@@ -46,22 +47,28 @@ class _RecordingWidgetState extends State<RecordingWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 2,
-      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      child: ListTile(
-        leading: IconButton(
-          icon: Icon(_isPlaying ? Icons.pause_circle_filled : Icons.play_circle_fill),
-          iconSize: 36,
-          color: Theme.of(context).primaryColor,
-          onPressed: _togglePlayback,
-        ),
-        title: Text(widget.recording.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Text('${formatBytesToMegaBytes(widget.recording.sizeBytes)} ${formatSecondsToMmSs(widget.recording.durationSeconds)}'),
-        trailing: IconButton(
-          icon: const Icon(Icons.delete),
-          onPressed: widget.onDelete,
+    return GestureDetector(
+      onLongPressStart: (details) {
+        showModalBottomSheet(
+          context: context,
+          builder: (context) {
+            return RecordingDetailsModal(onDelete: widget.onDelete);
+          },
+        );
+      },
+      child: Card(
+        elevation: 2,
+        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
+        child: ListTile(
+          leading: IconButton(
+            icon: Icon(_isPlaying ? Icons.pause_circle_filled : Icons.play_circle_fill),
+            iconSize: 36,
+            color: Theme.of(context).colorScheme.primary,
+            onPressed: _togglePlayback,
+          ),
+          title: Text(widget.recording.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+          subtitle: Text('${formatBytesToMegaBytes(widget.recording.sizeBytes)} ${formatSecondsToMmSs(widget.recording.durationSeconds)}'),
         ),
       ),
     );
