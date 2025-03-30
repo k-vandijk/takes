@@ -1,16 +1,31 @@
 class Recording {
+  final String id;
   final String path;
-  final DateTime dateTime;
+  final DateTime date;
+  final double durationSeconds;
+  final int sizeBytes;
 
-  Recording({required this.path, required this.dateTime});
+  Recording({
+    required this.path,
+    required this.durationSeconds,
+    required this.sizeBytes,
+  }) : id = DateTime.now().millisecondsSinceEpoch.toString(),
+       date = DateTime.now();
 
-  Map<String, dynamic> toJson() => {
-    'path': path,
-    'dateTime': dateTime.toIso8601String(),
-  };
+  Recording.fromJson(Map<String, dynamic> json)
+      : id = json['id'] as String,
+        path = json['path'] as String,
+        date = DateTime.parse(json['date'] as String),
+        durationSeconds = (json['durationSeconds'] as num).toDouble(),
+        sizeBytes = json['sizeBytes'] as int;
 
-  factory Recording.fromJson(Map<String, dynamic> json) => Recording(
-    path: json['path'] as String,
-    dateTime: DateTime.parse(json['dateTime'] as String),
-  );
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'path': path,
+      'date': date.toIso8601String(),
+      'durationSeconds': durationSeconds,
+      'sizeBytes': sizeBytes,
+    };
+  }
 }

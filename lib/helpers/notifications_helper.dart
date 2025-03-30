@@ -8,6 +8,7 @@ void showSnackbar(BuildContext context, String message) {
 void showErrorSnackBar(BuildContext context, {message = 'Something went wrong.'}) {
   ScaffoldMessenger.of(context).clearSnackBars();
   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    behavior: SnackBarBehavior.floating,
     content: Text(message, style: const TextStyle(color: Colors.white)),
     backgroundColor: Colors.red,
   ));
