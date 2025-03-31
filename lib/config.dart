@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:record/record.dart';
 
 final RecordConfig recordConfigHigh = const RecordConfig(
@@ -17,3 +18,12 @@ final RecordConfig recordConfigLow = const RecordConfig(
   bitRate: 96000,
   sampleRate: 16000,
 );
+
+List<Color> labelColors = [
+  Colors.teal,
+  Colors.indigo,
+  Colors.amber,
+  Colors.cyan,
+  Colors.deepOrange,
+  Colors.pinkAccent,
+];

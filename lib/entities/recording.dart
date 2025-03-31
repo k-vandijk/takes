@@ -1,16 +1,24 @@
+import 'package:flutter/material.dart';
+
 class Recording {
   final String id;
   final DateTime date;
-  final String name;
+  String name;
   final String path;
   final double durationSeconds;
   final int sizeBytes;
+  String? label;
+  Color? labelBackgroundColor;
+  Color? labelForegroundColor;
 
   Recording({
     required this.name,
     required this.path,
     required this.durationSeconds,
     required this.sizeBytes,
+    this.label,
+    this.labelBackgroundColor,
+    this.labelForegroundColor,
   }) : id = DateTime.now().millisecondsSinceEpoch.toString(),
        date = DateTime.now();
 
@@ -20,7 +28,10 @@ class Recording {
         path = json['path'] as String,
         date = DateTime.parse(json['date'] as String),
         durationSeconds = (json['durationSeconds'] as num).toDouble(),
-        sizeBytes = json['sizeBytes'] as int;
+        sizeBytes = json['sizeBytes'] as int,
+        label = json['label'] as String?,
+        labelBackgroundColor = json['labelBackgroundColor'] != null ? Color(json['labelBackgroundColor'] as int) : null,
+        labelForegroundColor = json['labelForegroundColor'] != null ? Color(json['labelForegroundColor'] as int) : null;
 
   Map<String, dynamic> toJson() {
     return {
@@ -30,6 +41,9 @@ class Recording {
       'durationSeconds': durationSeconds,
       'sizeBytes': sizeBytes,
       'name': name,
+      'label': label,
+      'labelBackgroundColor': labelBackgroundColor?.value,
+      'labelForegroundColor': labelForegroundColor?.value,
     };
   }
 }

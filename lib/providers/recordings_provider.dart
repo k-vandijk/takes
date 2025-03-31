@@ -54,4 +54,19 @@ class RecordsProvider extends ChangeNotifier {
       return [];
     }
   }
+
+  Future<void> updateRecording(Recording recording) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final index = _recordings.indexWhere((r) => r.id == recording.id);
+      if (index != -1) {
+        _recordings[index] = recording;
+        final List<String> recordingsJson = _recordings.map((r) => jsonEncode(r.toJson())).toList();
+        await prefs.setStringList('recordings', recordingsJson);
+        notifyListeners();
+      }
+    } catch (e) {
+      print('Error updating recording: $e');
+    }
+  }
 }
