@@ -46,6 +46,7 @@ class _RecordingDetailsModalState extends State<RecordingDetailsModal> {
         break;
       case ModalContent.label:
         modalToShow = LabelModalContent(
+          recording: widget.recording,
           onBack: () {
             setState(() {
               HapticFeedback.mediumImpact();
@@ -152,20 +153,51 @@ class DetailsModalContent extends StatelessWidget {
   }
 }
 
-class LabelModalContent extends StatelessWidget {
+class LabelModalContent extends StatefulWidget {
+  final Recording recording;
   final VoidCallback onBack;
 
-  const LabelModalContent({super.key, required this.onBack});
+  const LabelModalContent({
+    super.key,
+    required this.recording,
+    required this.onBack,
+  });
+
+  @override
+  State<LabelModalContent> createState() => _LabelModalContentState();
+}
+
+class _LabelModalContentState extends State<LabelModalContent> {
+
+  Color selectedColor = labelColors.first;
+
+  void onSave(BuildContext context, String label) {
+    if (label.isNotEmpty) {
+    widget.recording.label = label;
+    widget.recording.labelBackgroundColor = selectedColor;
+    widget.recording.labelForegroundColor = Colors.white;
+    Provider.of<RecordsProvider>(context, listen: false)
+        .updateRecording(widget.recording)
+        .then((_) {
+          Navigator.pop(context);
+        })
+        .catchError((error) {
+          showErrorSnackBar(context);
+        });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final TextEditingController controller = TextEditingController();
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
-            IconButton(icon: const Icon(Icons.arrow_back), onPressed: onBack),
+            IconButton(icon: const Icon(Icons.arrow_back), onPressed: widget.onBack),
             Center(
               child: Text(
                 'Label Recording',
@@ -179,7 +211,12 @@ class LabelModalContent extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 8),
-        const TextField(decoration: InputDecoration(labelText: 'Label')),
+        TextField(
+          controller: controller,
+          decoration: const InputDecoration(
+            labelText: 'Label'
+          )
+        ),
         const SizedBox(height: 16),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -187,7 +224,10 @@ class LabelModalContent extends StatelessWidget {
               labelColors.map((color) {
                 return GestureDetector(
                   onTap: () {
-                    print('Selected color: $color');
+                    setState(() {
+                      HapticFeedback.mediumImpact();
+                      selectedColor = color;
+                    });
                   },
                   child: Container(
                     width: 40,
@@ -195,10 +235,9 @@ class LabelModalContent extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: color,
                       shape: BoxShape.circle,
-                      border: Border.all(
-                        color: Theme.of(context).colorScheme.onSurface,
-                        width: 2,
-                      ),
+                      border: selectedColor == color
+                          ? Border.all(color: Theme.of(context).colorScheme.primary, width: 4)
+                          : null,
                     ),
                   ),
                 );
@@ -210,9 +249,7 @@ class LabelModalContent extends StatelessWidget {
           children: [
             SmallButtonWidget(
               text: 'Save',
-              onPressed: () {
-                // Save label logic
-              },
+              onPressed: () => onSave(context, controller.text),
             ),
           ],
         ),

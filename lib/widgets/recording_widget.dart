@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:takes/entities/recording.dart';
-import 'package:takes/helpers/formatting_helper.dart';
 import 'package:takes/widgets/recording_details_modal.dart';
 
 class RecordingWidget extends StatefulWidget {
@@ -88,9 +87,9 @@ class _RecordingWidgetState extends State<RecordingWidget> {
                 widget.recording.name,
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
-              subtitle: Text(
-                '${formatBytesToMegaBytes(widget.recording.sizeBytes)} ${formatSecondsToMmSs(widget.recording.durationSeconds)}',
-              ),
+              // subtitle: Text(
+              //   '${formatBytesToMegaBytes(widget.recording.sizeBytes)} ${formatSecondsToMmSs(widget.recording.durationSeconds)}',
+              // ),
             ),
           ),
 

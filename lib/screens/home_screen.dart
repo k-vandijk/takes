@@ -107,6 +107,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   return RecordingWidget(
                     recording: recording,
                     onDelete: () => _onDeleteRecording(recording),
+                    label: recording.label,
+                    labelBackgroundColor: recording.labelBackgroundColor,
+                    labelForegroundColor: recording.labelForegroundColor,
                   );
                 },
               );
