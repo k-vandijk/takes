@@ -46,8 +46,8 @@ class _RecordingWidgetState extends State<RecordingWidget> {
 
   @override
   void dispose() {
-    super.dispose();
     _audioPlayer.dispose();
+    super.dispose();
   }
 
   @override
@@ -56,63 +56,52 @@ class _RecordingWidgetState extends State<RecordingWidget> {
       onLongPressStart: (details) {
         showModalBottomSheet(
           context: context,
-          builder: (context) {
-            return RecordingDetailsModal(
-              onDelete: widget.onDelete,
-              recording: widget.recording,
-            );
-          },
+          builder: (context) => RecordingDetailsModal(
+            recording: widget.recording,
+            onDelete: widget.onDelete,
+          ),
         );
       },
-      child: Stack(
-        children: [
-          Card(
-            elevation: 2,
-            margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(32),
-            ),
-            child: ListTile(
+      child: Card(
+        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        child: Stack(
+          children: [
+            ListTile(
               leading: IconButton(
                 icon: Icon(
-                  _isPlaying
-                      ? Icons.pause_circle_filled
-                      : Icons.play_circle_fill,
+                  _isPlaying ? Icons.pause_circle_filled : Icons.play_circle_fill,
                 ),
                 iconSize: 36,
-                color: Theme.of(context).colorScheme.primary,
+                color: Theme.of(context).colorScheme.tertiary,
                 onPressed: _togglePlayback,
               ),
-              title: Text(
-                widget.recording.name,
-                style: const TextStyle(fontWeight: FontWeight.bold),
+              title: Text(widget.recording.name, style: Theme.of(context).textTheme.titleMedium),
+              subtitle: Text(
+                '${(widget.recording.sizeBytes / (1024 * 1024)).toStringAsFixed(2)} MB • ${(widget.recording.durationSeconds / 60).toStringAsFixed(2)} min',
+                style: Theme.of(context).textTheme.bodySmall,
               ),
-              // subtitle: Text(
-              //   '${formatBytesToMegaBytes(widget.recording.sizeBytes)} ${formatSecondsToMmSs(widget.recording.durationSeconds)}',
-              // ),
             ),
-          ),
-
-          if (widget.label != null)
-            Positioned(
-              top: 16,
-              right: 32,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-                decoration: BoxDecoration(
-                  color: widget.labelBackgroundColor ?? Theme.of(context).colorScheme.primary,
-                  borderRadius: BorderRadius.circular(32),
-                ),
-                child: Text(
-                  widget.label!,
-                  style: TextStyle(
-                    fontSize: 12, 
-                    color: widget.labelForegroundColor ?? Colors.white,
+            if (widget.label != null)
+              Positioned(
+                top: 12,
+                right: 12,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: widget.labelBackgroundColor ?? Theme.of(context).colorScheme.secondary,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    widget.label!,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: widget.labelForegroundColor ?? Theme.of(context).colorScheme.onSecondary,
+                    ),
                   ),
                 ),
               ),
-            ),
-        ],
+          ],
+        ),
       ),
     );
   }

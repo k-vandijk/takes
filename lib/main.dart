@@ -6,27 +6,31 @@ import 'package:takes/screens/home_screen.dart';
 // Light Color Scheme
 final kLightColorScheme = const ColorScheme(
   brightness: Brightness.light,
-  primary: Color(0xFF5E8C61), // A rich forest green for a grounded, natural feel
-  onPrimary: Color(0xFFFFFFFF), // White for clean contrast
-  secondary: Color(0xFFF4A261), // A warm, soft orange for energy and highlights
-  onSecondary: Color(0xFF1A1A1A), // Near-black for readability
-  error: Color(0xFFD9534F), // A muted red for errors, noticeable but not jarring
-  onError: Color(0xFFFFFFFF), // White for legibility
-  surface: Color(0xFFF8F1E9), // Off-white with a warm tint for a cozy background
-  onSurface: Color(0xFF2D2D2D), // Dark gray for text, softer than pure black
+  primary: Color(0xFFB39DDB), // Muted lavender
+  onPrimary: Color(0xFF1A1A1A), // Dark gray
+  secondary: Color(0xFFF8BBD0), // Soft peach
+  onSecondary: Color(0xFF1A1A1A), // Dark gray
+  tertiary: Color(0xFFB2DFDB), // Pale mint
+  onTertiary: Color(0xFF1A1A1A), // Dark gray
+  error: Color(0xFFE57373), // Dusty rose
+  onError: Color(0xFFFFFFFF), // White
+  surface: Color(0xFFFAFAFA), // Light cream
+  onSurface: Color(0xFF424242), // Soft charcoal
 );
 
 // Dark Color Scheme
 final kDarkColorScheme = const ColorScheme(
   brightness: Brightness.dark,
-  primary: Color(0xFF8AB89C), // A muted sage green, calming and modern
-  onPrimary: Color(0xFF0F1A13), // Very dark green-gray for contrast
-  secondary: Color(0xFFE68A5C), // A deeper orange, vibrant yet balanced
-  onSecondary: Color(0xFF1F0F07), // Dark brown-black for readability
-  error: Color(0xFFE57373), // A softer red, visible in dark mode
-  onError: Color(0xFF1A0F0F), // Dark gray for error text contrast
-  surface: Color(0xFF1E2521), // Deep charcoal with a hint of green for depth
-  onSurface: Color(0xFFECE5D8), // Warm off-white for text, easy on the eyes
+  primary: Color(0xFF9575CD), // Darker lavender
+  onPrimary: Color(0xFFFFFFFF), // White
+  secondary: Color(0xFFF06292), // Darker peach
+  onSecondary: Color(0xFFFFFFFF), // White
+  tertiary: Color(0xFF80CBC4), // Darker mint
+  onTertiary: Color(0xFF1A1A1A), // Dark gray
+  error: Color(0xFFF44336), // Darker dusty rose
+  onError: Color(0xFFFFFFFF), // White
+  surface: Color(0xFF37474F), // Dark gray-blue
+  onSurface: Color(0xFFB0BEC5), // Light gray
 );
 
 void main() {
@@ -34,8 +38,79 @@ void main() {
     MultiProvider(
       providers: [ChangeNotifierProvider(create: (_) => RecordsProvider())],
       child: MaterialApp(
-        theme: ThemeData(colorScheme: kLightColorScheme),
-        darkTheme: ThemeData(colorScheme: kDarkColorScheme),
+        theme: ThemeData(
+          colorScheme: kLightColorScheme,
+          scaffoldBackgroundColor: kLightColorScheme.surface,
+          cardTheme: CardTheme(
+            color: const Color(0xFFF5F5F5),
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(32),
+            ),
+          ),
+          iconTheme: IconThemeData(color: kLightColorScheme.tertiary),
+          textTheme: TextTheme(
+            titleMedium: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: kLightColorScheme.primary,
+            ),
+            bodySmall: TextStyle(
+              color: kLightColorScheme.onSurface.withAlpha(200),
+            ),
+          ),
+          textButtonTheme: TextButtonThemeData(
+            style: TextButton.styleFrom(
+              foregroundColor: kLightColorScheme.secondary,
+            ),
+          ),
+          inputDecorationTheme: InputDecorationTheme(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: kLightColorScheme.tertiary),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: kLightColorScheme.secondary),
+            ),
+            labelStyle: TextStyle(color: kLightColorScheme.tertiary),
+          ),
+        ),
+        darkTheme: ThemeData(
+          colorScheme: kDarkColorScheme,
+          scaffoldBackgroundColor: kDarkColorScheme.surface,
+          cardTheme: CardTheme(
+            color: const Color(0xFF455A64),
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(32),
+            ),
+          ),
+          iconTheme: IconThemeData(color: kDarkColorScheme.tertiary),
+          textTheme: TextTheme(
+            titleMedium: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: kDarkColorScheme.primary,
+            ),
+            bodySmall: TextStyle(
+              color: kDarkColorScheme.onSurface.withAlpha(200),
+            ),
+          ),
+          textButtonTheme: TextButtonThemeData(
+            style: TextButton.styleFrom(
+              foregroundColor: kDarkColorScheme.secondary,
+            ),
+          ),
+          inputDecorationTheme: InputDecorationTheme(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: kDarkColorScheme.tertiary),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: kDarkColorScheme.secondary),
+            ),
+            labelStyle: TextStyle(color: kDarkColorScheme.tertiary),
+          ),
+        ),
         home: const Scaffold(body: Center(child: HomeScreen())),
       ),
     ),

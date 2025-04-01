@@ -36,7 +36,7 @@ class _RecordingDetailsModalState extends State<RecordingDetailsModal> {
         modalToShow = DetailsModalContent(
           recording: widget.recording,
           onDelete: widget.onDelete,
-          onSwitch: (ModalContent newContent) {
+          onSwitch: (newContent) {
             setState(() {
               HapticFeedback.mediumImpact();
               _currentContent = newContent;
@@ -68,7 +68,14 @@ class _RecordingDetailsModalState extends State<RecordingDetailsModal> {
         break;
     }
 
-    return Container(padding: const EdgeInsets.all(16), child: modalToShow);
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      child: modalToShow,
+    );
   }
 }
 
@@ -93,56 +100,36 @@ class DetailsModalContent extends StatelessWidget {
         Center(
           child: Text(
             recording.name,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.primary,
-            ),
+            style: Theme.of(context).textTheme.titleMedium,
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         Text(
           'Size: ${formatBytesToMegaBytes(recording.sizeBytes)}',
-          style: TextStyle(
-            fontSize: 16,
-            color: Theme.of(context).colorScheme.onSurface,
-          ),
+          style: Theme.of(context).textTheme.bodySmall,
         ),
         const SizedBox(height: 8),
         Text(
           'Duration: ${formatSecondsToMmSs(recording.durationSeconds)}',
-          style: TextStyle(
-            fontSize: 16,
-            color: Theme.of(context).colorScheme.onSurface,
-          ),
+          style: Theme.of(context).textTheme.bodySmall,
         ),
         const SizedBox(height: 16),
         ListTile(
           dense: true,
-          leading: const Icon(Icons.edit),
+          leading: Icon(Icons.edit, color: Theme.of(context).colorScheme.tertiary),
           title: const Text('Rename'),
-          onTap: () {
-            onSwitch(ModalContent.rename);
-          },
+          onTap: () => onSwitch(ModalContent.rename),
         ),
         ListTile(
           dense: true,
-          leading: const Icon(Icons.label_outline),
+          leading: Icon(Icons.label_outline, color: Theme.of(context).colorScheme.tertiary),
           title: const Text('Label'),
-          onTap: () {
-            onSwitch(ModalContent.label);
-          },
+          onTap: () => onSwitch(ModalContent.label),
         ),
         ListTile(
           dense: true,
-          leading: Icon(
-            Icons.delete,
-            color: Theme.of(context).colorScheme.error,
-          ),
-          title: Text(
-            'Delete',
-            style: TextStyle(color: Theme.of(context).colorScheme.error),
-          ),
+          leading: Icon(Icons.delete, color: Theme.of(context).colorScheme.error),
+          title: Text('Delete', style: TextStyle(color: Theme.of(context).colorScheme.error)),
           onTap: () {
             Navigator.pop(context);
             onDelete();
@@ -168,7 +155,6 @@ class LabelModalContent extends StatefulWidget {
 }
 
 class _LabelModalContentState extends State<LabelModalContent> {
-
   Color selectedColor = labelColors.first;
 
   Future<void> onSave(BuildContext context, String label) async {
@@ -177,10 +163,7 @@ class _LabelModalContentState extends State<LabelModalContent> {
       widget.recording.labelBackgroundColor = selectedColor;
       widget.recording.labelForegroundColor = Colors.white;
       try {
-        await Provider.of<RecordsProvider>(
-          context,
-          listen: false,
-        ).updateRecording(widget.recording);
+        await Provider.of<RecordsProvider>(context, listen: false).updateRecording(widget.recording);
       } catch (error) {
         showErrorSnackBar(context);
       } finally {
@@ -199,51 +182,61 @@ class _LabelModalContentState extends State<LabelModalContent> {
       children: [
         Row(
           children: [
-            IconButton(icon: const Icon(Icons.arrow_back), onPressed: widget.onBack),
-            Center(
-              child: Text(
-                'Label Recording',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.primary,
+            IconButton(
+              icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.primary),
+              onPressed: widget.onBack,
+            ),
+            Expanded(
+              child: Center(
+                child: Text(
+                  'Label Recording',
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
               ),
             ),
+            const SizedBox(width: 48),
           ],
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         TextField(
           controller: controller,
-          decoration: const InputDecoration(
-            labelText: 'Label'
-          )
+          decoration: InputDecoration(
+            labelText: 'Label',
+            labelStyle: TextStyle(color: Theme.of(context).colorScheme.tertiary),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: Theme.of(context).colorScheme.tertiary),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: Theme.of(context).colorScheme.secondary),
+            ),
+          ),
         ),
         const SizedBox(height: 16),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children:
-              labelColors.map((color) {
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      HapticFeedback.mediumImpact();
-                      selectedColor = color;
-                    });
-                  },
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: color,
-                      shape: BoxShape.circle,
-                      border: selectedColor == color
-                          ? Border.all(color: Theme.of(context).colorScheme.primary, width: 4)
-                          : null,
-                    ),
-                  ),
-                );
-              }).toList(),
+          children: labelColors.map((color) {
+            return GestureDetector(
+              onTap: () {
+                setState(() {
+                  HapticFeedback.mediumImpact();
+                  selectedColor = color;
+                });
+              },
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: color,
+                  shape: BoxShape.circle,
+                  border: selectedColor == color
+                      ? Border.all(color: Theme.of(context).colorScheme.secondary, width: 3)
+                      : null,
+                ),
+              ),
+            );
+          }).toList(),
         ),
         const SizedBox(height: 16),
         Row(
@@ -274,16 +267,13 @@ class RenameModalContent extends StatelessWidget {
     if (input.isNotEmpty) {
       recording.name = input;
       try {
-        await Provider.of<RecordsProvider>(
-          context,
-          listen: false,
-        ).updateRecording(recording);
+        await Provider.of<RecordsProvider>(context, listen: false).updateRecording(recording);
       } catch (error) {
         showErrorSnackBar(context);
       } finally {
         Navigator.pop(context);
       }
-    } 
+    }
   }
 
   @override
@@ -295,25 +285,37 @@ class RenameModalContent extends StatelessWidget {
       children: [
         Row(
           children: [
-            IconButton(icon: const Icon(Icons.arrow_back), onPressed: onBack),
-            Center(
-              child: Text(
-                'Rename Recording',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.primary,
+            IconButton(
+              icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.primary),
+              onPressed: onBack,
+            ),
+            Expanded(
+              child: Center(
+                child: Text(
+                  'Rename Recording',
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
               ),
             ),
+            const SizedBox(width: 48),
           ],
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         TextField(
           controller: controller,
-          decoration: const InputDecoration(
-            labelText: 'New Name'
-          )),
+          decoration: InputDecoration(
+            labelText: 'New Name',
+            labelStyle: TextStyle(color: Theme.of(context).colorScheme.tertiary),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: Theme.of(context).colorScheme.tertiary),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: Theme.of(context).colorScheme.secondary),
+            ),
+          ),
+        ),
         const SizedBox(height: 16),
         Row(
           mainAxisAlignment: MainAxisAlignment.end,

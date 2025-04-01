@@ -25,9 +25,10 @@ class _RecorderButtonWidgetState extends State<RecorderButtonWidget>
     super.initState();
     _animationController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 1),
+      duration: const Duration(milliseconds: 800),
+      reverseDuration: const Duration(milliseconds: 800),
     )..repeat(reverse: true);
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.5).animate(
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.3).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
   }
@@ -44,9 +45,7 @@ class _RecorderButtonWidgetState extends State<RecorderButtonWidget>
     } else {
       widget.onStartRecording();
     }
-    setState(() {
-      isRecording = !isRecording;
-    });
+    setState(() => isRecording = !isRecording);
   }
 
   @override
@@ -58,25 +57,24 @@ class _RecorderButtonWidgetState extends State<RecorderButtonWidget>
         alignment: Alignment.center,
         children: [
           if (isRecording)
-            Positioned(
-              child: ScaleTransition(
-                scale: _scaleAnimation,
-                child: Container(
-                  width: 70,
-                  height: 70,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Theme.of(context).colorScheme.onSurface.withAlpha(50),
-                  ),
+            ScaleTransition(
+              scale: _scaleAnimation,
+              child: Container(
+                width: 70,
+                height: 70,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Theme.of(context).colorScheme.secondary.withAlpha(100),
                 ),
               ),
             ),
           IconButton(
             icon: Icon(isRecording ? Icons.stop : Icons.mic),
-            iconSize: 36,
+            iconSize: 32,
             style: IconButton.styleFrom(
               backgroundColor: Theme.of(context).colorScheme.primary,
               foregroundColor: Theme.of(context).colorScheme.onPrimary,
+              padding: const EdgeInsets.all(16),
             ),
             onPressed: _handlePressed,
           ),

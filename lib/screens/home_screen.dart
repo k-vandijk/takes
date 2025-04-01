@@ -1,6 +1,7 @@
+
 import 'dart:io';
-import 'package:path/path.dart' as p;
 import 'package:flutter/material.dart';
+import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:record/record.dart';
@@ -33,18 +34,12 @@ class _HomeScreenState extends State<HomeScreen> {
       durationSeconds: duration?.inSeconds.toDouble() ?? 0.0,
       sizeBytes: size,
     );
-    await Provider.of<RecordsProvider>(
-      context,
-      listen: false,
-    ).addRecording(recording);
+    await Provider.of<RecordsProvider>(context, listen: false).addRecording(recording);
   }
 
   void _onDeleteRecording(Recording recording) {
     _deleteRecording(recording.path);
-    Provider.of<RecordsProvider>(
-      context,
-      listen: false,
-    ).removeRecording(recording);
+    Provider.of<RecordsProvider>(context, listen: false).removeRecording(recording);
   }
 
   void _deleteRecording(String path) {
@@ -60,7 +55,6 @@ class _HomeScreenState extends State<HomeScreen> {
       showErrorSnackBar(context);
       return;
     }
-
     setState(() => isRecording = true);
     final directory = await getApplicationDocumentsDirectory();
     final filename = DateTime.now().millisecondsSinceEpoch.toString();
@@ -70,19 +64,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> stopRecording() async {
     setState(() => isRecording = false);
-
     final path = await record.stop();
     if (path == null) {
       showErrorSnackBar(context);
       return;
     }
-
     final name = await getRecordingName(context);
     if (name == null) {
       _deleteRecording(path);
       return;
     }
-
     _saveRecording(path, name);
   }
 
@@ -100,23 +91,33 @@ class _HomeScreenState extends State<HomeScreen> {
           Consumer<RecordsProvider>(
             builder: (context, recordsProvider, child) {
               final recordings = recordsProvider.recordings;
-              return ListView.builder(
-                itemCount: recordings.length,
-                itemBuilder: (context, index) {
-                  final recording = recordings[index];
-                  return RecordingWidget(
-                    recording: recording,
-                    onDelete: () => _onDeleteRecording(recording),
-                    label: recording.label,
-                    labelBackgroundColor: recording.labelBackgroundColor,
-                    labelForegroundColor: recording.labelForegroundColor,
-                  );
-                },
-              );
+              return recordings.isEmpty
+                  ? Center(
+                      child: Text(
+                        'No recordings yet!',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface,
+                          fontSize: 18,
+                        ),
+                      ),
+                    )
+                  : ListView.builder(
+                      itemCount: recordings.length,
+                      itemBuilder: (context, index) {
+                        final recording = recordings[index];
+                        return RecordingWidget(
+                          recording: recording,
+                          onDelete: () => _onDeleteRecording(recording),
+                          label: recording.label,
+                          labelBackgroundColor: recording.labelBackgroundColor,
+                          labelForegroundColor: recording.labelForegroundColor,
+                        );
+                      },
+                    );
             },
           ),
           Align(
-            alignment: const Alignment(0.0, 0.90),
+            alignment: const Alignment(0.0, 0.85),
             child: RecorderButtonWidget(
               onStartRecording: startRecording,
               onStopRecording: stopRecording,
