@@ -116,7 +116,7 @@ class _HomeScreenState extends State<HomeScreen> {
             },
           ),
           Align(
-            alignment: Alignment.bottomCenter,
+            alignment: const Alignment(0.0, 0.90),
             child: RecorderButtonWidget(
               onStartRecording: startRecording,
               onStopRecording: stopRecording,

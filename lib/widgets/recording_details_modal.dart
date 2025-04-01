@@ -171,19 +171,21 @@ class _LabelModalContentState extends State<LabelModalContent> {
 
   Color selectedColor = labelColors.first;
 
-  void onSave(BuildContext context, String label) {
+  Future<void> onSave(BuildContext context, String label) async {
     if (label.isNotEmpty) {
-    widget.recording.label = label;
-    widget.recording.labelBackgroundColor = selectedColor;
-    widget.recording.labelForegroundColor = Colors.white;
-    Provider.of<RecordsProvider>(context, listen: false)
-        .updateRecording(widget.recording)
-        .then((_) {
-          Navigator.pop(context);
-        })
-        .catchError((error) {
-          showErrorSnackBar(context);
-        });
+      widget.recording.label = label;
+      widget.recording.labelBackgroundColor = selectedColor;
+      widget.recording.labelForegroundColor = Colors.white;
+      try {
+        await Provider.of<RecordsProvider>(
+          context,
+          listen: false,
+        ).updateRecording(widget.recording);
+      } catch (error) {
+        showErrorSnackBar(context);
+      } finally {
+        Navigator.pop(context);
+      }
     }
   }
 
@@ -249,7 +251,7 @@ class _LabelModalContentState extends State<LabelModalContent> {
           children: [
             SmallButtonWidget(
               text: 'Save',
-              onPressed: () => onSave(context, controller.text),
+              onPressed: () async => await onSave(context, controller.text),
             ),
           ],
         ),
@@ -268,14 +270,19 @@ class RenameModalContent extends StatelessWidget {
     required this.onBack,
   });
 
-  void onSave(BuildContext context, String input) {
+  Future<void> onSave(BuildContext context, String input) async {
     if (input.isNotEmpty) {
       recording.name = input;
-      Provider.of<RecordsProvider>(context, listen: false).updateRecording(recording).then((_) {
-        Navigator.pop(context);
-      }).catchError((error) {
+      try {
+        await Provider.of<RecordsProvider>(
+          context,
+          listen: false,
+        ).updateRecording(recording);
+      } catch (error) {
         showErrorSnackBar(context);
-      });
+      } finally {
+        Navigator.pop(context);
+      }
     } 
   }
 
@@ -313,7 +320,7 @@ class RenameModalContent extends StatelessWidget {
           children: [
             SmallButtonWidget(
               text: 'Save',
-              onPressed: () => onSave(context, controller.text),
+              onPressed: () async => await onSave(context, controller.text),
             ),
           ],
         ),
